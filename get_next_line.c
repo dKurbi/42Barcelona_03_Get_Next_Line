@@ -6,7 +6,7 @@
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 19:56:31 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/13 19:37:13 by dkurcbar         ###   ########.fr       */
+/*   Updated: 2023/07/14 17:33:07 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,56 +17,110 @@
 # define BUFFER_SIZE 42
 #endif
 
-char	*join_str(char *o_str, char *s_str, char, int *t)
+
+int	len_str(char *str)
 {
-	char	*rtn;
+	int	i;
+
+	if (str == NULL)
+		return (0);
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
+char	*join_str(char *o_str, char *s_str, int lo)
+{
+	char	*j_str;
+	int		size;
 	int		i;
 	int		j;
 
 	i = 0;
 	j = 0;
-	rtn = (char *) malloc((*t * BUFFER_SIZE + 1) * sizeof(char));
-	while (str[0][i])
-		rtn[i++] = o_str[i];
-	while (j < BUFFER_SIZE)
-		rtn [i++] = s_str[j++];
+	size = len_str(o_str) + lo;
+	if (lo == 0)
+		size = len_str(o_str) + len_str(s_str);
+	j_str = (char *) malloc((size + 1) * sizeof (char));
+	while (o_str)
+	{
+		j_str[i] = o_str[i];
+		o_str++;
+	}
+	while (i <= size)
+		j_str[i++] = s_str[j++];
+	j_str[i] = '\0';
+	return (j_str);
+}
+
+char	*strd_up(char *s1, int size)
+{
+	char	*rtn;
+	int		i;
+
+	i = 0;
+	if (size == 0)
+		size = len_str(s1);
+	rtn = (char *)malloc((size + 1) * sizeof (char));
+	if (!rtn)
+		return (NULL);
+	while (i < size)
+	{
+		rtn[i] = s1[i];
+		i++;
+	}
+	rtn[i] = '\0';
 	return (rtn);
 }
 
-int check_n(char *str, int *)
+void	my_free(char *tofree)
 {
-	int	i;
+	free(tofree);
+}
+
+int	check(char *str, char *storage, char *rtn)
+{
+	int		i;
 
 	i = 0;
-	while (str[i] != '\0')
-	{
-		if (str[i] == '\n')
-			return (1);
+	while (str[i] != '\0' && str[i] != '\n') 
 		i++;
+	if (i == len_str(str))
+	{
+		join_str(rtn, str, 0);
+		return (0);
 	}
-	return (0);
+	else if (str[i] == '\n')
+	{
+		storage = join_str (NULL, &str[i + 1], len_str(&str[i + 1]));
+	}
+	else
+	{
+		my_free(storage);
+	}
+	rtn = join_str(rtn, str, i);
+	return (1);
 }
 
 char	*get_next_line(int fd)
 {
-	char			buffer;
-	int				numbytes;
-	static int		i;
-	char			*str[3]; //
-
-	i = 0;
-	str[0] = (char) malloc((BUFFER_SIZE + 1) * sizeof(char));
-	str[1] = (char) malloc((BUFFER_SIZE + 1) * sizeof(char));
-	numbytes = read(fd, &str[0], BUFFER_SIZE);
-	while ((numbytes > 0) && !check_n(str[0]))
+	static char 	*storage = NULL;
+	char			*rtn;
+	char			*read_str;
+	int				nb;
+	
+	rtn = NULL;
+	if (storage && check(storage, storage, rtn))
 	{
-
-		join_str();
-		
-		numbytes = read(fd, &str[0], BUFFER_SIZE);
+		my_free(storage);
+		return (rtn);
 	}
-	str[i] = '\n';
-	return (&str);
+	read_str = (char *) malloc (BUFFER_SIZE * sizeof (char));
+	nb = read(fd, read_str, BUFFER_SIZE);
+	while (check(read_str, storage, rtn) && nb == BUFFER_SIZE)
+		nb = read(fd, read_str,BUFFER_SIZE);
+	return (rtn);
 }
 
 int main (void)
