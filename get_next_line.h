@@ -6,7 +6,7 @@
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/28 19:59:14 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/19 16:59:21 by dkurcbar         ###   ########.fr       */
+/*   Updated: 2023/07/20 18:52:24 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,11 @@ char	*get_next_line(int fd);
 int		len_str(char *str);
 char	*join_str(char *o_str, char *s_str, int lo);
 int		check_n(char *str);
-int		storaging(char **rtn, char **stor);
-char	*my_free(char **str);
+int		manage_storage(char **rtn, char **stor);
+void	my_free(char **str1, char **str2, char **str3);
+int		get_read(int fd, char **read_str);
+int		save_storage(char **storage, char **read_str);
+int		read_line(int fd, char **read_str, char **rtn);
 int		get_read(int fd, char **read_str);
 
 #endif

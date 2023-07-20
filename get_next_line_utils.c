@@ -6,7 +6,7 @@
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 14:46:39 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/19 14:59:26 by dkurcbar         ###   ########.fr       */
+/*   Updated: 2023/07/20 19:46:55 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,23 @@ char	*join_str(char *o_str, char *s_str, int lo)
 
 	i = 0;
 	j = 0;
+	j_str = NULL;
 	if (lo == -1)
 		size = len_str(o_str) + len_str(s_str);
 	else
 		size = len_str(o_str) + lo;
 	j_str = (char *) malloc((size + 1) * sizeof (char));
+	if (j_str == NULL)
+		return (NULL);
 	while (o_str != NULL && o_str[i])
 	{
 		j_str[i] = o_str[i];
 		i++;
 	}
-	while (i <= size)
+	while (i <= size && s_str != NULL)
 		j_str[i++] = s_str[j++];
 	j_str[i] = '\0';
+	my_free(&o_str, NULL, NULL);
 	return (j_str);
 }
 
@@ -63,3 +67,24 @@ int	check_n(char *str)
 		return (-1);
 	return (i);
 }
+
+
+void	my_free(char **str1, char **str2, char **str3)
+{
+	if (str1 != NULL && *str1 != NULL)
+	{
+		free(*str1);
+		*str1 = NULL;
+	}
+	if (str2 != NULL && *str2 != NULL)
+	{
+		free(*str2);
+		*str2 = NULL;
+	}
+	if (str3 != NULL && *str3 != NULL)
+	{
+		free(*str3);
+		*str3 = NULL;
+	}
+}
+

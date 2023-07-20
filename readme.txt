@@ -1,12 +1,8 @@
-hola que talllll
-que tal ertwertewrtwerr twert wertwert wert wert wertwert wert wert wert edad ada 
-como va todo bien
-sasdassfsdfsad asdadfsad
-
-sadfasdf 
-asdfasdf 
-asdfasdf 
-as sadfasdf
-
-11efsdfssdadasd  accessibleasdassd 
-qer23rfadfsadaf sadfasdf>fin<
+1 Hola que tal
+2 todo bien
+3 y tu?
+4 asddasda
+5 hollasd
+6
+7
+8 asddasda
