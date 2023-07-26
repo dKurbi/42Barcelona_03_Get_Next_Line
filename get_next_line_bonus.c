@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/20 17:46:53 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/26 17:49:13 by dkurcbar         ###   ########.fr       */
+/*   Updated: 2023/07/26 17:44:46 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int	init(char **rtn, char **read_str, int *i_rtn, int fd)
 {
@@ -91,21 +91,21 @@ int	save_storage(char **storage, char **read_str)
 
 char	*get_next_line(int fd)
 {
-	static char		*storage = NULL;
+	static char		*storage[OPEN_MAX];
 	char			*rtn;
 	char			*read_str;
 	int				i_rtn[3];
 
 	if (init(&rtn, &read_str, i_rtn, fd) == -1)
 		return (NULL);
-	i_rtn[0] = manage_storage (&rtn, &storage);
+	i_rtn[0] = manage_storage (&rtn, &storage[fd]);
 	if (i_rtn[0] == 0)
 		i_rtn[1] = read_line (fd, &read_str, &rtn);
 	if (i_rtn[0] == 0 && i_rtn[1] == 0)
-		i_rtn[2] = save_storage (&storage, &read_str);
+		i_rtn[2] = save_storage (&storage[fd], &read_str);
 	if (i_rtn[0] == -1 || i_rtn[1] == -1 || i_rtn [2] == -1)
 	{
-		my_free(&read_str, &storage, &rtn);
+		my_free(&read_str, &storage[fd], &rtn);
 		return (NULL);
 	}
 	my_free(&read_str, NULL, NULL);
