@@ -6,7 +6,7 @@
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 15:45:48 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/26 16:53:16 by dkurcbar         ###   ########.fr       */
+/*   Updated: 2023/07/26 18:03:17 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,13 @@ int main (void)
 	fd = open(dict, O_RDONLY);
 	if (fd == -1)
 		return (1);
-	str = "El fichero Readme.txt contiene:";
-	printf("%s\n------------------------------------------------------------------\n",str);
+	str = "readme.txt";
+	printf("El archivo %s contiene:\n--------------------------------------------------\n", str);
 	while (str != NULL)
 	{
 			str = get_next_line(fd);
-			printf("%s",str);
+			if (str != NULL)	
+				printf("%s",str );
 	}
 	close(fd);
 } 
