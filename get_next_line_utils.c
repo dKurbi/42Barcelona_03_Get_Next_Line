@@ -6,7 +6,7 @@
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 14:46:39 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/20 19:46:55 by dkurcbar         ###   ########.fr       */
+/*   Updated: 2023/07/26 16:18:03 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,12 @@ int	len_str(char *str)
 	return (i);
 }
 
-char	*join_str(char *o_str, char *s_str, int lo)
+char	*join_str_len(char *o_str, char *s_str, int lo)
 {
 	char	*j_str;
 	int		size;
 	int		i;
 	int		j;
-
 
 	i = 0;
 	j = 0;
@@ -42,15 +41,15 @@ char	*join_str(char *o_str, char *s_str, int lo)
 	j_str = (char *) malloc((size + 1) * sizeof (char));
 	if (j_str == NULL)
 		return (NULL);
+	j_str[0] = '\0';
 	while (o_str != NULL && o_str[i])
 	{
 		j_str[i] = o_str[i];
 		i++;
 	}
-	while (i <= size && s_str != NULL)
+	while (i < size && s_str[j] != '\0' && s_str != NULL)
 		j_str[i++] = s_str[j++];
 	j_str[i] = '\0';
-	my_free(&o_str, NULL, NULL);
 	return (j_str);
 }
 
@@ -65,9 +64,8 @@ int	check_n(char *str)
 		i++;
 	if (str[i] == '\0')
 		return (-1);
-	return (i);
+	return (i + 1);
 }
-
 
 void	my_free(char **str1, char **str2, char **str3)
 {
@@ -88,3 +86,13 @@ void	my_free(char **str1, char **str2, char **str3)
 	}
 }
 
+int	init_read(char **read_str, long *nb, long *n_pos)
+{
+	*nb = BUFFER_SIZE;
+	*n_pos = -1;
+	*read_str = (char *) malloc ((BUFFER_SIZE + 1) * sizeof(char));
+	if (*read_str == NULL)
+		return (-1);
+	*read_str[0] = '\0';
+	return (0);
+}

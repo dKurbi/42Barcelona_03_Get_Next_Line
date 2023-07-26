@@ -8,6 +8,7 @@ else
 # Obtener el valor de BUFFER_SIZE del primer argumento
 BUFFER_SIZE=$1
 fi
+
 # Compilar los archivos fuente
 gcc -g -Wall -Wextra -Werror -D BUFFER_SIZE=$BUFFER_SIZE get_next_line.c get_next_line_utils.c main_get_next_line.c -o gnl
 
