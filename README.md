@@ -1,6 +1,11 @@
 # 42Barcelona_03_Get_Next_Line
 The get_next_line project aims to create a function that reads a text file or standard input line by line. This function is designed to be reusable, providing developers with a useful tool to process text data efficiently.
 
+## Prototype 
+> _char *get_next_line(int **fd**);_
+
+**Parameters:** 
+> **fd:** _The file descriptor to read from_
 ## Project Instructions
 
 * Repeated calls to the get_next_line() function allow you to read the text file pointed to by the file descriptor, one line at a time.
