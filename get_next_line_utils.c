@@ -6,93 +6,106 @@
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 14:46:39 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/26 16:18:03 by dkurcbar         ###   ########.fr       */
+/*   Updated: 2024/01/18 16:08:47 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	len_str(char *str)
+int	ft_strlen(char *str)
 {
 	int	i;
 
-	if (str == NULL)
-		return (0);
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-char	*join_str_len(char *o_str, char *s_str, int lo)
-{
-	char	*j_str;
-	int		size;
-	int		i;
-	int		j;
-
-	i = 0;
-	j = 0;
-	j_str = NULL;
-	if (lo == -1)
-		size = len_str(o_str) + len_str(s_str);
-	else
-		size = len_str(o_str) + lo;
-	j_str = (char *) malloc((size + 1) * sizeof (char));
-	if (j_str == NULL)
-		return (NULL);
-	j_str[0] = '\0';
-	while (o_str != NULL && o_str[i])
+	if (str)
 	{
-		j_str[i] = o_str[i];
-		i++;
+		i = 0;
+		while (str[i])
+			i++;
+		return (i);
 	}
-	while (i < size && s_str[j] != '\0' && s_str != NULL)
-		j_str[i++] = s_str[j++];
-	j_str[i] = '\0';
-	return (j_str);
+	return (0);
 }
 
-int	check_n(char *str)
+int	where_is_nl(char *str)
 {
-	int		i;
+	int	i;
 
 	i = 0;
-	if (!str)
-		return (-1);
-	while (str[i] != '\0' && str[i] != '\n') 
-		i++;
-	if (str[i] == '\0')
-		return (-1);
-	return (i + 1);
+	if (str)
+	{
+		while (str[i] && str[i] != '\n')
+			i++;
+		if (str[i] == '\n')
+			return (i + 1);
+	}
+	return (-1);
 }
 
-void	my_free(char **str1, char **str2, char **str3)
+char	*my_free(char **str1, char **str2, char **str3)
 {
 	if (str1 != NULL && *str1 != NULL)
 	{
 		free(*str1);
 		*str1 = NULL;
 	}
-	if (str2 != NULL && *str2 != NULL)
+	if (str2 && *str2)
 	{
 		free(*str2);
 		*str2 = NULL;
 	}
-	if (str3 != NULL && *str3 != NULL)
+	if (str3 && *str3)
 	{
 		free(*str3);
 		*str3 = NULL;
 	}
+	return (NULL);
 }
 
-int	init_read(char **read_str, long *nb, long *n_pos)
+int	my_free_int(char **str1, char **str2, char **str3, int rtn)
 {
-	*nb = BUFFER_SIZE;
-	*n_pos = -1;
-	*read_str = (char *) malloc ((BUFFER_SIZE + 1) * sizeof(char));
-	if (*read_str == NULL)
-		return (-1);
-	*read_str[0] = '\0';
-	return (0);
+	if (str1 != NULL && *str1 != NULL)
+	{
+		free(*str1);
+		*str1 = NULL;
+	}
+	if (str2 && *str2)
+	{
+		free(*str2);
+		*str2 = NULL;
+	}
+	if (str3 && *str3)
+	{
+		free(*str3);
+		*str3 = NULL;
+	}
+	return (rtn);
+}
+
+char	*ft_strljoin(char *str1, char *str2, int len)
+{
+	int		i;
+	int		j;
+	char	*rtn;
+	int		size;
+
+	if (len < 0)
+		size = ft_strlen(str1) + ft_strlen(str2);
+	else
+		size = ft_strlen(str1) + len;
+	rtn = malloc(sizeof(char) * (size + 1));
+	if (rtn)
+	{
+		i = 0;
+		while (str1 && str1[i])
+		{
+			rtn[i] = str1[i];
+			i++;
+		}
+		j = 0;
+		while (str2 && str2[j] && i < size)
+			rtn[i++] = str2[j++];
+		rtn[i] = '\0';
+	}
+	my_free(&str1, NULL, NULL);
+	return (rtn);
 }

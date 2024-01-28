@@ -5,109 +5,125 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dkurcbar <dkurcbar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/20 17:46:53 by dkurcbar          #+#    #+#             */
-/*   Updated: 2023/07/26 17:49:13 by dkurcbar         ###   ########.fr       */
+/*   Created: 2024/01/17 18:23:33 by dkurcbar          #+#    #+#             */
+/*   Updated: 2024/01/18 16:12:53 by dkurcbar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	init(char **rtn, char **read_str, int *i_rtn, int fd)
+int	check_storage(char **storage, char **rtn)
 {
-	if (fd < 0) 
-		return (-1);
-	*rtn = NULL;
-	*read_str = NULL;
-	i_rtn[0] = 1;
-	i_rtn[1] = 1;
-	i_rtn[2] = 1;
-	return (0);
-}
+	int		nl;
+	char	*s;
 
-int	manage_storage(char **rtn, char **stor)
-{
-	int		n_pos;
-	char	*swap;
-
-	if (stor && *stor) 
+	s = NULL;
+	nl = where_is_nl(*storage);
+	if (nl > NO_NL && nl < ft_strlen(*storage))
 	{
-		n_pos = check_n(*stor);
-		*rtn = join_str_len(NULL, *stor, n_pos);
-		if (*rtn == NULL)
-			return (-1);
-		if (n_pos > -1 && n_pos < len_str(*stor))
+		*rtn = ft_strljoin(NULL, *storage, nl);
+		if (!*rtn)
+			return (my_free_int(storage, rtn, NULL, ERROR));
+		s = *storage;
+		if (nl < ft_strlen(s))
 		{
-			swap = join_str_len(NULL, &(*stor)[n_pos], -1);
-			if (swap == NULL)
-				return (-1);
-			my_free(stor, NULL, NULL);
-			*stor = swap;
-			return (1);
+			*storage = ft_strljoin(NULL, &s[nl], ALL);
+			if (!*storage)
+				return (my_free_int(storage, rtn, &s, ERROR));
 		}
-		my_free(stor, NULL, NULL);
+		my_free(&s, NULL, NULL);
+		return (STOP);
 	}
-	return (0);
+	*rtn = *storage;
+	*storage = NULL;
+	if (nl != NO_NL)
+		return (STOP);
+	return (OK);
 }
 
-int	read_line(int fd, char **read_str, char **rtn)
+static int	read_until_nl(int fd, char **b, char **line)
 {
-	long	nb;
-	long	n_pos;
-	char	*swap;
+	int		nb;
+	int		nl;
+	char	*buffer;
 
-	if (init_read(read_str, &nb, &n_pos) == -1)
-		return (-1);
-	while ((n_pos == -1 && nb == BUFFER_SIZE))
+	buffer = *b;
+	nb = BUFFER_SIZE;
+	nl = NO_NL;
+	while (nb == BUFFER_SIZE && nl == NO_NL)
 	{
-		nb = read(fd, *read_str, BUFFER_SIZE);
-		if (nb == -1)
-			return (-1);
-		if (nb == 0) 
-			return (1);
-		(*read_str)[nb] = '\0';
-		n_pos = check_n(*read_str);
-		swap = join_str_len(*rtn, *read_str, n_pos);
-		if (swap == NULL)
-			return (-1);
-		my_free(rtn, NULL, NULL);
-		*rtn = swap;
+		nb = read(fd, buffer, BUFFER_SIZE);
+		if (nb < 0)
+			return (ERROR);
+		if (nb == 0 && !*line)
+			return (STOP);
+		buffer[nb] = '\0';
+		nl = where_is_nl(buffer);
+		*line = ft_strljoin(*line, buffer, ALL);
+		if (!*line)
+			return (ERROR);
 	}
-	return (0);
+	return (OK);
 }
 
-int	save_storage(char **storage, char **read_str)
+int	read_line(int fd, char **line)
 {
-	int	n_pos;
+	char	*buffer;
+	int		exit_code;
 
-	n_pos = check_n (*read_str);
-	if (n_pos != -1 && n_pos < len_str (*read_str))
+	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!buffer)
+		return (ERROR);
+	exit_code = read_until_nl(fd, &buffer, line);
+	my_free(&buffer, NULL, NULL);
+	return (exit_code);
+}
+
+int	manage_exit(char **rtn, char **line, char **storage)
+{
+	int		nl;
+	char	*l;
+
+	nl = where_is_nl(*line);
+	*rtn = ft_strljoin(*rtn, *line, nl);
+	if (!*rtn)
 	{
-		*storage = join_str_len(NULL, &(*read_str)[n_pos], -1);
-		if (*storage == NULL)
-			return (-1);
+		my_free(line, storage, NULL);
+		return (ERROR);
 	}
+	if (nl > NO_NL && nl < ft_strlen(*line))
+	{
+		l = *line;
+		*storage = ft_strljoin(NULL, &l[nl], -1);
+		if (!*storage)
+		{
+			my_free(line, storage, NULL);
+			return (ERROR);
+		}
+	}
+	my_free(line, NULL, NULL);
 	return (0);
 }
 
 char	*get_next_line(int fd)
 {
-	static char		*storage = NULL;
-	char			*rtn;
-	char			*read_str;
-	int				i_rtn[3];
+	static char	*storage = NULL;
+	char		*rtn;
+	char		*line;
+	int			exit_code;		
 
-	if (init(&rtn, &read_str, i_rtn, fd) == -1)
-		return (NULL);
-	i_rtn[0] = manage_storage (&rtn, &storage);
-	if (i_rtn[0] == 0)
-		i_rtn[1] = read_line (fd, &read_str, &rtn);
-	if (i_rtn[0] == 0 && i_rtn[1] == 0)
-		i_rtn[2] = save_storage (&storage, &read_str);
-	if (i_rtn[0] == -1 || i_rtn[1] == -1 || i_rtn [2] == -1)
-	{
-		my_free(&read_str, &storage, &rtn);
-		return (NULL);
-	}
-	my_free(&read_str, NULL, NULL);
+	rtn = NULL;
+	line = NULL;
+	exit_code = OK;
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)
+		return (my_free(&storage, NULL, NULL));
+	if (storage)
+		exit_code = check_storage(&storage, &rtn);
+	if (exit_code == OK)
+		exit_code = read_line(fd, &line);
+	if (exit_code == OK)
+		exit_code = manage_exit(&rtn, &line, &storage);
+	if (exit_code == ERROR)
+		return (my_free(&storage, &rtn, NULL));
 	return (rtn);
 }
